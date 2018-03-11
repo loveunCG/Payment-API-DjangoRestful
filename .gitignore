@@ -3,3 +3,4 @@
 /.vscode
 /RISAPI/config
 db.sqliste3
+*.pyc
