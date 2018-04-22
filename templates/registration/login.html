@@ -1,0 +1,48 @@
+{% extends 'auth_base.html' %} {% load static %} {% block title %}Sign Up {% endblock %} {% load material_form %} 
+{% block content %}
+
+<div class="card">
+    <form method="post" class="login-form" action="{% url 'login' %}">
+        <div class="row">
+            <div class="input-field col s12 center">
+                <img src="{% static "images/login-logo.png" %}" alt="" class="circle responsive-img valign profile-image-login">
+                <p class="center login-form-text">
+                    <h4 class="header">Log in</h4>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+                <div class="login-error red-text text-red lighten-1">
+                        {% if form.errors %}
+                        <p class="center-align">Your username and password didn't match. Please try again.</p>
+                        {% endif %} {% if next %} {% if user.is_authenticated %}
+                        <p class="center-align">Your account doesn't have access to this page. To proceed, please login with an account that has access.</h5>
+                        <p></p>
+                        {% else %}
+                        <p class="center-align">Please login to see this page.</p>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+        </div>
+        {% csrf_token %}
+        <div class="card-content">
+
+            {% form form=form layout=form.layout %} {% endform %}
+            <a href="{% url 'password_reset' %}">
+                Lost password?
+            </a>
+        </div>
+        <div class="card-action">
+            <input class="btn cyan waves-effect waves-light" type="submit" value="login" />
+            <input class="waves-effect waves-indigo btn right" onclick="gotoSignUp()" type="button" value="SignUp" />
+            <input type="hidden" name="next" value="{{ next }}" />
+        </div>
+    </form>
+</div>
+{% endblock content %} {% block extrajs %}
+<script>
+    function gotoSignUp() {
+        location.href = "{% url 'signup' %}"
+    }
+</script>
+{% endblock extrajs %}

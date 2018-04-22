@@ -1,0 +1,41 @@
+{% extends 'auth_base.html' %} {% block title %}Sign Up{% endblock %} {% load material_form %} {% block content %}
+<style>
+
+    .help-block {
+        display: none;
+    }
+</style>
+{% load static %} 
+<div class="card">
+    <div class="card-content">
+        <form method="post">
+                <div class="row">
+                        <div class="input-field col s12 center">
+                            <img src="{% static "images/login-logo.png" %}" alt="" class="circle responsive-img valign profile-image-login">
+                            <p class="center login-form-text">
+                                <h4 class="header">Sign Up</h4>
+                            </p>
+                        </div>
+                    </div>
+            {% csrf_token %} {% form form=form %}{% endform %}
+            <div class="row">
+                    <button class="waves-effect waves-indigo lighten-1 btn left" type="button" onclick="gotoLogIn()">Log in</button>
+                
+                    <button class="waves-effect waves-indigo lighten-1 btn right" type="submit">Sign up</button>
+
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    function gotoLogIn(){
+        location.href = "{% url 'login' %}"
+    }
+
+</script>    
+{% endblock extrajs %}
+
+    

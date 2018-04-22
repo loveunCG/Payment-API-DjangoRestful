@@ -1,0 +1,50 @@
+
+
+
+
+
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      {% block title %}
+      Leagues Login
+      {% endblock %}
+    </title>
+    <link href="{% static "css/style.css" %}" type="text/css" rel="stylesheet" media="screen,projection">
+    {% include 'material/includes/material_css.html' %}
+    <style type="text/css">
+      html, body {
+          background: rgb(204, 191, 191);
+          height: 100%;
+      }
+      .login-page-view {
+          padding-top: 6%;
+      }
+      .login-error {
+          padding: 0px;
+      }
+    </style>
+  </head>
+  <body class="valign">
+      <div class="login-page-view">
+            {% load material_form %}
+            <div class="row">
+                <div class="col m4 offset-m4">
+                        {% block content %}{% endblock %}
+                       
+                </div>
+            </div>         
+      </div>      
+      {% block js %}
+      <script src="{% static 'material/js/jquery.js' %}"></script>
+      {% include 'material/includes/material_js.html' %}
+      {% block extrajs %}
+      {% endblock %}
+      {% endblock %}
+  </body>
+</html>

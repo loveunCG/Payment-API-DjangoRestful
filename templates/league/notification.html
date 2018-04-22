@@ -1,0 +1,437 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block extrahead %}
+<link href="{% static "css/dataTables.bootstrap.css" %}" type="text/css" rel="stylesheet"/> 
+<style>
+    body:{
+       overflow:scroll !important;
+    }
+    .modal { width: 35% !important ; height: auto !important ; }
+
+</style>
+
+     
+{% endblock extrahead %}
+    
+{% load material_form %} 
+
+{% block content %}
+
+<div class="container-fluid"> 
+
+    <div class="row">
+        <div class="col m12">
+            <div class="card card-nav-tabs">
+                    <div class="card-header" data-background-color="purple">
+                        <div class="nav-tabs-navigation">
+                            <div class="nav-tabs-wrapper">
+                                <span class="nav-tabs-title">Notification :</span>
+                                <ul class="nav nav-tabs" data-tabs="tabs">
+                                    <li class="active">
+                                        <a href="#incoming_notification" data-toggle="tab">
+                                            <i class="material-icons">call_received</i> In Coming
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
+                                    <li class="">
+                                        <a href="#outcoming_notification" data-toggle="tab">
+                                            <i class="material-icons">call_made</i> Out Coming
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>             
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="incoming_notification">
+                                <table class="table centered responsive-table" id = "incoming_table">                                                
+                                </table>
+                            </div>
+                            <div class="tab-pane" id="outcoming_notification">
+                                <table class="table centered responsive-table" id = "outcoming_table" style="width: 100%">                                                
+                                </table>
+                            </div>                          
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>   
+</div>
+
+<div id="addLeagueModal" data-iziModal-title="Add Leagues"  data-iziModal-icon="icon-home">
+   <div class="card-panel">
+       <form method="post" id="leagues_form">
+           {% csrf_token %}
+           {% form form=leagueForm %} {% endform %}
+           <div class="row">
+               <div class="col m12">
+                   <button class="btn-floating waves-effect waves-light blue right" data-izimodal-close="" style="margin-left:20px" data-izimodal-transitionout="bounceOutDown" type="button"><i class="material-icons">close</i></button>                    
+                   <button class="btn-floating waves-effect waves-light blue right" type="button" onclick="addLeagueSubmit()" ><i class="material-icons" >near_me</i></button>
+               </div>
+           </div>
+       </form>            
+   </div>
+</div>
+
+
+<div id="send_invitation_model" class="modal modal-fixed-footer">
+   <div class="modal-header">
+           <span> <i class="material-icons dp48">email</i>&nbsp;</span>
+   </div>
+   <form method="post" id="send_invitation_form">        
+       <div class="modal-content">       
+               <div class="card-header" data-background-color="purple">
+                   <h4 class="title">Send Invitation</h4>
+               </div>
+               <div class="card-content">
+                       {% csrf_token %}
+                       <div class="row">
+                           <div class="col m12">
+                               <select class="mdb-select colorful-select dropdown-primary" name="user[]" multiple searchable="Search here..">
+                                   {% for user in users %}
+                                       <option value="{{user.id}}">{{user.username}}</option>         
+                                   {% endfor %}                  
+                               </select>
+                           </div>               
+                       </div>        
+                       
+                       <div class="row">
+                           <div class="input-field col s12">
+                               <textarea id="textarea1" name = "content" class="materialize-textarea"></textarea>
+                               <label for="textarea1">Invite Message</label>
+                           </div>
+                       </div>
+                       <input type="hidden" name="league" id="sending_league_id"/>
+               </div>        
+           
+       </div> 
+       <div class="modal-footer">
+           <div class="row">
+               <div class="col m10 offset-m1">
+                   <button class="btn-floating modal-action modal-close  waves-effect waves-light blue right"  type="button"><i class="material-icons">close</i></button>                    
+                   <button class="btn-floating waves-effect waves-light blue left" type="button" onclick="sendInvite()" ><i class="material-icons" >near_me</i></button>
+               </div>
+           </div> 
+       </div>
+   </form>   
+   
+</div>
+<div id="outcomingTableModel" data-iziModal-title="User List"  data-iziModal-icon="icon-home">
+   <div class="card-panel">
+       <table class="table" id = "outcomingTableTable">                                  
+       </table>                        
+   </div>
+</div>
+<form method="post" id="Join_league_form">
+   {% csrf_token %}
+   <input type="hidden" name="league" id="league_id"/>            
+   <input type="hidden" name="user_id" value="{{request.user.id}}"/>            
+</form> 
+
+<form id="update_notification_form">
+   <input type="hidden" name="notification_id" id="notification_id"/>
+   <input type="hidden" name="status" id="status_notification"/>
+   {% csrf_token %}
+</form>
+
+{% endblock content %}
+
+{% block extrajs %}
+<script src="{% static 'js/jquery.dataTables.js' %}"></script>
+<script src="{% static 'js/dataTables.bootstrap.js' %}"></script>
+<script>
+   var ajax_incoming_table = '{%url "get_incoming_table" %}'
+   var ajax_outcoming_table = '{%url "get_outcoming_table" %}'
+   var incomingTable
+   var outcomingTable
+   function addLeagues(){
+       console.log('open');
+       $('#leagues_form')[0].reset()
+      $('#addLeagueModal').iziModal('open');
+   }
+
+   function joinLeague(param){
+       $('#league_id').val(param)
+       var formData = $('#Join_league_form').serialize()
+       let settings = {
+           "url": "{% url 'join_league' %}",
+           "method": "POST",
+           "data": formData
+       };
+       $.confirm({
+           title: 'Alert',
+           content: ' Are you sure you want to Join this League?',
+           icon: 'warning',
+           theme: 'material',
+           autoClose: 'chancel|5000',
+           animation: 'zoom',
+           closeAnimation: 'scale',
+           draggable: true,
+           buttons: {
+               confirm: {
+                   text: 'Yes',
+                   keys: ['shift', 'alt'],
+                   action: function () {
+                       $.ajax(settings).done(function (response) {
+                           console.log(response)
+                           $.alert({
+                               title: 'Alert!',
+                               content: response.message,
+                               columnClass: 'small',
+                               theme: 'material',
+                               buttons: {
+                                   ok: {
+                                       text: 'Ok',
+                                       btnClass: 'btn-yellow',
+                                       action: function () {
+                                           if(response.response_code){
+                                               incomingTable.ajax.reload();
+                                               $(this).remove();
+                                           }else{
+                                               
+                                           }
+                                       }
+                                   }
+                               }
+                           });
+                       })
+                       .fail(function(err) {
+                           console.log( err );
+                       });
+                   }
+               },
+               chancel: {
+                   text: 'No',
+                   action: function () {
+                       $(this).remove();
+                   }
+
+               }
+           }
+       });
+   }
+
+   function addLeagueSubmit () {
+       var formData = $('#leagues_form').serialize()
+       let settings = {
+           "url": "{% url 'ajax_save_leagues' %}",
+           "method": "POST",
+           "data": formData
+       };
+       $.ajax(settings).done(function (response) {
+           console.log(response)
+           $.alert({
+               title: 'Alert!',
+               content: response.message,
+               columnClass: 'small',
+               theme: 'material',
+               buttons: {
+                   ok: {
+                       text: 'Ok',
+                       btnClass: 'btn-yellow',
+                       action: function () {
+                           if(response.response_code){
+                               incomingTable.ajax.reload();
+                               $('#addLeagueModal').iziModal('close');
+                           }else{
+                               
+                           }
+                       }
+                   }
+               }
+           });
+       })
+       .fail(function(err) {
+           console.log( err );
+       })
+       ;
+       
+   }
+   function viewLeague(param){
+       var ajaxurl = ajax_league_user_table + '?league='+param;
+       outcomingTable.ajax.url(ajaxurl).load();
+       $('#outcomingTableModel').iziModal('open');
+       
+   }
+   function update_notification(param, status) {
+       console.log(param)
+       $('#notification_id').val(param)
+       $('#status_notification').val(status)
+       var formData = $('#update_notification_form').serialize()
+       let settings = {
+           "url": "{% url 'update_notification' %}",
+           "method": "POST",
+           "data": formData
+       };
+       $.confirm({
+           title: 'Alert',
+           content: ' Are you sure you want to do this action?',
+           icon: 'fa fa-warning',
+           theme: 'material',
+           autoClose: 'chancel|5000',
+           animation: 'zoom',
+           closeAnimation: 'scale',
+           draggable: true,
+           buttons: {
+               confirm: {
+                   text: 'Yes',
+                   keys: ['shift', 'alt'],
+                   action: function () {
+                       $.ajax(settings).done(function (response) {
+                           console.log(response)
+                           $.alert({
+                               title: 'Alert!',
+                               content: response.message,
+                               columnClass: 'small',
+                               theme: 'material',
+                               buttons: {
+                                   ok: {
+                                       text: 'Ok',
+                                       btnClass: 'btn-yellow',
+                                       action: function () {
+                                           if(response.response_code){
+                                               incomingTable.ajax.reload();
+                                               $(this).remove();
+                                           }else{
+                                               
+                                           }
+                                       }
+                                   }
+                               }
+                           });
+                       })
+                       .fail(function(err) {
+                           console.log( err );
+                       });
+                   }
+               },
+               chancel: {
+                   text: 'No',
+                   action: function () {
+                       $(this).remove();
+                   }
+
+               }
+           }
+       });
+   }
+
+   function sendInvitation(param){
+       $('#sending_league_id').val(param)
+       $('#send_invitation_model').modal('open')
+
+   }
+
+   function sendInvite(){
+       var formData = $('#send_invitation_form').serialize()
+       console.log(formData);
+       let settings = {
+           "url": "{% url 'send_invitation' %}",
+           "method": "POST",
+           "data": formData
+       };
+       $.ajax(settings).done(function (response) {
+           $.alert({
+               title: 'Alert!',
+               content: response.message,
+               columnClass: 'small',
+               theme: 'material',
+               buttons: {
+                   ok: {
+                       text: 'Ok',
+                       btnClass: 'btn-yellow',
+                       action: function () {
+                           if(response.response_code){
+                               incomingTable.ajax.reload();
+                           }else{
+                               
+                           }
+                       }
+                   }
+               }
+           });
+       })
+       .fail(function(err) {
+           console.log( err );
+       });
+       
+   }
+
+   $(function(){
+
+       $('#textarea1').trigger('autoresize');
+       $('#outcomingTableModel').iziModal({
+           headerColor: '#ab47bc',
+           radius: 3,
+           background: null,
+           theme: 'bootstrap'
+       })              
+
+       $('#addLeagueModal').iziModal({
+           headerColor: '#ab47bc',
+           radius: 3,
+           background: null,
+           theme: 'light'
+       });
+       $('#send_invitation_model').modal({
+           dismissible: true, // Modal can be dismissed by clicking outside of the modal
+           opacity: .5, // Opacity of modal background
+           inDuration: 300, // Transition in duration
+           outDuration: 200, // Transition out duration
+           startingTop: '4%', // Starting top style attribute
+           endingTop: '10%', // Ending top style attribute
+       })
+      
+       
+       incomingTable = $('#incoming_table').DataTable( {
+           "ajax": ajax_incoming_table,
+           "order": [[ 2, "desc" ]],
+           "bLengthChange": false,
+           "bFilter": true,
+           "columns": [
+               { "data": "user" },
+               { "data": "league" },
+               { "data": "manager" },
+               { "data": "status" },                
+               { "data": "action" },                
+           ],
+           "searching": false,
+           "columnDefs": [
+               {  "title": "User", "width": "20%", "targets": 0 },
+               {  "title": "League", "width": "20%", "targets": 1 },
+               {  "title": "Manager", "width": "20%", "targets": 2 },
+               {  "title": "Status", "width": "20%", "targets": 3 },
+               {  "title": "Action", "width": "20%", "targets": 4 },
+            ],
+           "bAutoWidth": false
+       });
+       outcomingTable = $('#outcoming_table').DataTable( {
+           "ajax": ajax_outcoming_table,
+           "order": [[ 2, "desc" ]],
+           "bLengthChange": false,
+           "bFilter": true,
+           "columns": [
+               { "data": "user" },
+               { "data": "league" },
+               { "data": "manager" },
+               { "data": "status" },                
+               { "data": "content" },                
+               { "data": "date" },                
+           ],
+           "searching": false,
+           "columnDefs": [
+               {  "title": "User", "width": "20%", "targets": 0 },
+               {  "title": "League", "width": "20%", "targets": 1 },
+               {  "title": "Manager", "width": "20%", "targets": 2 },
+               {  "title": "Status", "width": "20%", "targets": 3 },
+               {  "title": "Content", "width": "20%", "targets": 4 },
+               {  "title": "send Date", "width": "20%", "targets": 5 },
+            ],
+       } );
+   })
+</script>
+{% endblock extrajs %}
+   

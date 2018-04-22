@@ -1,0 +1,33 @@
+
+{% load static %}
+<div class="sidebar" data-color="purple" data-image="{% static 'img/sidebar-1.jpg' %}">  
+  <div class="logo">
+      <a href="#" class="simple-text">
+          League Management 
+      </a>
+  </div>
+  <div class="sidebar-wrapper">
+      <ul class="nav">
+
+          <li>
+              <a href="{%url 'profile' %}">
+                  <i class="material-icons">person</i>
+                  <p>Profile</p>
+              </a>
+          </li>
+
+          <li>
+              <a href="{%url 'leagues' %}">
+                  <i class="material-icons">content_paste</i>
+                  <p>League Lists</p>
+              </a>
+          </li>    
+          <li>
+              <a href="{%url 'notification' %}">
+                  <i class="material-icons text-gray">notifications</i>
+                  <p>Send Invitation</p>
+              </a>
+          </li>         
+      </ul>
+  </div>
+</div>
