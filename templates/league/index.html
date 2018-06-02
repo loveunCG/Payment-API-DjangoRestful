@@ -1,8 +1,8 @@
- {% extends 'base.html' %} 
+ {% extends 'base.html' %}
  {% load static %}
- 
+
  {% block extrahead %}
- <link href="{% static "css/dataTables.bootstrap.css" %}" type="text/css" rel="stylesheet"/> 
+ <link href="{% static "css/dataTables.bootstrap.css" %}" type="text/css" rel="stylesheet"/>
  <style>
      body:{
         overflow:scroll !important;
@@ -11,27 +11,27 @@
 
  </style>
 
-      
+
  {% endblock extrahead %}
-     
- {% load material_form %} 
+
+ {% load material_form %}
 
  {% block content %}
 
- <div class="container-fluid"> 
+ <div class="container-fluid">
     <div class="row">
         <div class="col m12">
             <div class="card">
                 <div class="card-header" data-background-color="purple">
                     <h4 class="title">League List</h4>
                 </div>
-               
+
                 <div class="card-content table-responsive">
                     <div class="row">
                         <div class="col m11 offset-m1">
                             <a class="btn-floating waves-effect waves-light red left" onclick="addLeagues()"><i class="material-icons">add</i></a>
                         </div>
-                    </div> 
+                    </div>
                     <table class="table centered" id = "ForLeagueTable">
                         <thead class="text-primary">
                             <th>Name</th>
@@ -39,11 +39,11 @@
                             <th>create At</th>
                             <th>Manager</th>
                             <th>Action</th>
-                        </thead>                    
+                        </thead>
                     </table>
                 </div>
             </div>
-        </div>         
+        </div>
     </div>
 </div>
 
@@ -54,11 +54,11 @@
             {% form form=leagueForm %} {% endform %}
             <div class="row">
                 <div class="col m12">
-                    <button class="btn-floating waves-effect waves-light blue right" data-izimodal-close="" style="margin-left:20px" data-izimodal-transitionout="bounceOutDown" type="button"><i class="material-icons">close</i></button>                    
+                    <button class="btn-floating waves-effect waves-light blue right" data-izimodal-close="" style="margin-left:20px" data-izimodal-transitionout="bounceOutDown" type="button"><i class="material-icons">close</i></button>
                     <button class="btn-floating waves-effect waves-light blue right" type="button" onclick="addLeagueSubmit()" ><i class="material-icons" >near_me</i></button>
                 </div>
             </div>
-        </form>            
+        </form>
     </div>
 </div>
 
@@ -67,8 +67,8 @@
     <div class="modal-header">
             <span> <i class="material-icons dp48">email</i>&nbsp;</span>
     </div>
-    <form method="post" id="send_invitation_form">        
-        <div class="modal-content">       
+    <form method="post" id="send_invitation_form">
+        <div class="modal-content">
                 <div class="card-header" data-background-color="purple">
                     <h4 class="title">Send Invitation</h4>
                 </div>
@@ -80,13 +80,13 @@
                                     {% for user in users %}
                                         {% if user != request.user %}
 
-                                        <option value="{{user.id}}">{{user.username}}</option>         
+                                        <option value="{{user.id}}">{{user.username}}</option>
                                         {% endif %}
-                                    {% endfor %}                  
+                                    {% endfor %}
                                 </select>
-                            </div>               
-                        </div>        
-                        
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="input-field col s12">
                                 <textarea id="textarea1" name = "content" class="materialize-textarea"></textarea>
@@ -94,35 +94,31 @@
                             </div>
                         </div>
                         <input type="hidden" name="league" id="sending_league_id"/>
-                </div>        
-            
-        </div> 
+                </div>
+
+        </div>
         <div class="modal-footer">
             <div class="row">
                 <div class="col m10 offset-m1">
-                    <button class="btn-floating modal-action modal-close  waves-effect waves-light blue right"  type="button"><i class="material-icons">close</i></button>                    
+                    <button class="btn-floating modal-action modal-close  waves-effect waves-light blue right"  type="button"><i class="material-icons">close</i></button>
                     <button class="btn-floating waves-effect waves-light blue left" type="button" onclick="sendInvite()" ><i class="material-icons" >near_me</i></button>
                 </div>
-            </div> 
+            </div>
         </div>
-    </form>   
-    
+    </form>
+
 </div>
 <div id="viewLeagueUserListModel" data-iziModal-title="User List"  data-iziModal-icon="icon-home">
     <div class="card-panel">
-        <table class="table" id = "viewLeagueUserListTable">                                  
-        </table>                        
+        <table class="table" id = "viewLeagueUserListTable">
+        </table>
     </div>
 </div>
-
-
 <form method="post" id="Join_league_form">
     {% csrf_token %}
-    <input type="hidden" name="league" id="league_id"/>            
-    <input type="hidden" name="user_id" value="{{request.user.id}}"/>            
-</form>            
-
-
+    <input type="hidden" name="league" id="league_id"/>
+    <input type="hidden" name="user_id" value="{{request.user.id}}"/>
+</form>
 <form id="delete_league_form">
     <input type="hidden" name="league" id="league_delete_id"/>
     {% csrf_token %}
@@ -182,7 +178,7 @@
                                                 leaguesTable.ajax.reload();
                                                 $(this).remove();
                                             }else{
-                                                
+
                                             }
                                         }
                                     }
@@ -228,7 +224,7 @@
                                 leaguesTable.ajax.reload();
                                 $('#addLeagueModal').iziModal('close');
                             }else{
-                                
+
                             }
                         }
                     }
@@ -239,13 +235,13 @@
             console.log( err );
         })
         ;
-        
+
     }
     function viewLeague(param){
         var ajaxurl = ajax_league_user_table + '?league='+param;
         viewLeagueUserList.ajax.url(ajaxurl).load();
         $('#viewLeagueUserListModel').iziModal('open');
-        
+
     }
     function removeLeague(param) {
         $('#league_delete_id').val(param)
@@ -285,7 +281,7 @@
                                                 leaguesTable.ajax.reload();
                                                 $(this).remove();
                                             }else{
-                                                
+
                                             }
                                         }
                                     }
@@ -342,7 +338,7 @@
                                     'r_users': response.data,
                                 }));
                             }else{
-                                
+
                             }
                         }
                     }
@@ -352,7 +348,7 @@
         .fail(function(err) {
             console.log( err );
         });
-        
+
     }
 
     $(function(){
@@ -363,7 +359,7 @@
             radius: 3,
             background: null,
             theme: 'bootstrap'
-        })              
+        })
 
         $('#addLeagueModal').iziModal({
             headerColor: '#ab47bc',
@@ -379,8 +375,8 @@
             startingTop: '4%', // Starting top style attribute
             endingTop: '10%', // Ending top style attribute
         })
-       
-        
+
+
         viewLeagueUserList = $('#viewLeagueUserListTable').DataTable( {
 	        "ajax": ajax_league_user_table,
 	        "order": [[ 2, "desc" ]],
@@ -390,7 +386,7 @@
                 { "data": "user" },
                 { "data": "league" },
                 { "data": "manager" },
-                { "data": "date" },                
+                { "data": "date" },
             ],
             "searching": false,
 		    "columnDefs": [
@@ -427,4 +423,3 @@
     })
 </script>
 {% endblock extrajs %}
-    

@@ -4,3 +4,5 @@
 db.sqliste3
 *.pyc
 /league/migrations
+league/__pycache__/
+leagues/__pycache__/
