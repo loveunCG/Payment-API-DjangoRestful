@@ -19,6 +19,7 @@ sys.path.insert(0,PROJECT_DIR)
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "leagues.settings")
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "leagues.settings")
+os.environ["DJANGO_SETTINGS_MODULE"] = "leagues.settings"
 
 application = get_wsgi_application()

@@ -6,3 +6,4 @@ db.sqliste3
 /league/migrations
 league/__pycache__/
 leagues/__pycache__/
+/env
